@@ -13,25 +13,25 @@ jar {
 
 repositories {
 	maven {
-        url "http://repository.mapr.com/nexus/content/groups/mapr-public/"
-    }
-    
+		url "http://repository.mapr.com/nexus/content/groups/mapr-public/"
+	}
+	
 	mavenCentral()
 }
 
 uploadArchives {
-    repositories {
-       flatDir {
-           dirs 'repos'
-       }
-       
-       mavenDeployer {
-            repository(url: "file://localhost/Users/sriesenberg/Home/maven-repo/")
+	repositories {
+	   flatDir {
+		   dirs 'repos'
+	   }
+	   
+	   mavenDeployer {
+			repository(url: "file://localhost/Users/sriesenberg/Home/maven-repo/")
 			pom.groupId = 'gradle'
 			pom.artifactId = 'gradle-template'
 			pom.version = '1.0'
-        }
-    }
+		}
+	}
 }
 
 dependencies {
