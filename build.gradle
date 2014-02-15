@@ -1,20 +1,37 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'maven'
 
 sourceCompatibility = 1.7
 version = '1.0'
 
 jar {
 	manifest {
-		attributes 'Implementation-Title': 'gradle-template', 'Implementation-Version': 0.0
+		attributes 'Implementation-Title': 'gradle-template', 'Implementation-Version': version
 	}
 }
 
 repositories {
 	maven {
-        url "http://repository.mapr.com/maven/"
+        url "http://repository.mapr.com/nexus/content/groups/mapr-public/"
     }
+    
 	mavenCentral()
+}
+
+uploadArchives {
+    repositories {
+       flatDir {
+           dirs 'repos'
+       }
+       
+       mavenDeployer {
+            repository(url: "file://localhost/Users/sriesenberg/Home/maven-repo/")
+			pom.groupId = 'gradle'
+			pom.artifactId = 'gradle-template'
+			pom.version = '1.0'
+        }
+    }
 }
 
 dependencies {
@@ -27,7 +44,6 @@ dependencies {
 	compile 'org.slf4j:slf4j-api:1.7.6'
 	compile 'org.slf4j:slf4j-log4j12:1.7.6'
 	compile 'org.antlr:antlr:3.5.1'
-	compile 'com.oracle:ojdbc14:10.2.0.4.0'
 	compile 'org.apache.hadoop:hadoop-core:1.0.3-mapr-3.0.1'
 	compile 'org.apache.hbase:hbase:0.94.9-mapr'
 	compile 'org.apache.zookeeper:zookeeper:3.4.5'
@@ -46,5 +62,5 @@ dependencies {
 	compile 'org.hornetq:hornetq-core-client:2.2.14.Final'
 	compile 'org.hornetq:hornetq-jms-client:2.2.14.Final'
 	compile 'org.zeromq:jzmq:2.2.2'
-	testCompile 'junit:junit:4.4'
+	testCompile 'junit:junit:4.11'
 }
