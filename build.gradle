@@ -11,6 +11,42 @@ jar {
 	}
 }
 
+configurations {
+	allJars
+	deployerJars
+	allArchives
+}
+
+task jarAll(type: Jar) {
+	description 'Assembles a jar file with dependencies included in the /lib directory of the jar.'
+	
+	baseName = archivesBaseName + '-all'
+	into ('lib') {
+		from {
+			configurations.allJars
+		}
+	}
+	with jar
+}
+
+task uploadAll(type: Upload, dependsOn: jarAll) {
+	description 'Uploads the fat jar as an artifact.'
+	
+	configuration = configurations.allArchives
+	repositories {
+		mavenDeployer {
+			configuration = configurations.deployerJars
+			repository(url: "...") {
+				authentication(userName: "...", password: "...")
+			}
+		}
+	}
+}
+
+artifacts {
+	allArchives jarAll
+}
+
 repositories {
 	maven {
 		url "http://repository.mapr.com/nexus/content/groups/mapr-public/"
@@ -66,7 +102,15 @@ dependencies {
 	compile 'org.jboss.javaee:jboss-jms-api:1.1.0.GA'
 	compile 'org.syslog4j:syslog4j:0.9.30'
 	compile 'org.zeromq:jzmq:2.2.2'
+	
 	testCompile 'junit:junit:4.11'
+	
+	deployerJars 'org.apache.maven.wagon:wagon-http:2.2'
+	deployerJars 'org.apache.maven.wagon:wagon-ssh:2.2'
+	
+	// allJars project(':my-sub-project')
+	// allJars 'some:dependency:0.0.0'
+	// ...
 }
 
 task wrapper(type: Wrapper) {
