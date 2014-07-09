@@ -111,7 +111,3 @@ dependencies {
 	// allJars 'some:dependency:0.0.0'
 	// ...
 }
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.7'
-}
