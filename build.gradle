@@ -70,7 +70,7 @@ uploadArchives {
 }
 
 dependencies {
-	compile files("${System.env.HOME}/java/lib/oracle/ojdbc6.jar")
+//	compile files("${System.env.HOME}/java/lib/oracle/ojdbc6.jar")
 	
 	compile 'org.hibernate:hibernate-core:4.0.1.Final'
 	compile 'org.hibernate:hibernate-entitymanager:4.0.1.Final'
