@@ -52,6 +52,7 @@ repositories {
 	}
 	
 	mavenCentral()
+	mavenLocal()
 }
 
 uploadArchives {
