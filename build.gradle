@@ -1,20 +1,30 @@
+// -----------------------------------------------------------------------------
+// Plugins to customize gradle
+// -----------------------------------------------------------------------------
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 
+// -----------------------------------------------------------------------------
+// Custom properties (see gradle.properties and settings.gradle for more)
+// -----------------------------------------------------------------------------
+
 sourceCompatibility = 1.7
 
-jar {
-	manifest {
-		attributes 'Implementation-Title': 'gradle-template', 'Implementation-Version': version
-	}
-}
+// -----------------------------------------------------------------------------
+// Custom configuration names (see below for uses)
+// -----------------------------------------------------------------------------
 
 configurations {
 	allJars
 	deployerJars
 	allArchives
 }
+
+// -----------------------------------------------------------------------------
+// Custom tasks
+// -----------------------------------------------------------------------------
 
 task jarAll(type: Jar) {
 	description 'Assembles a jar file with dependencies included in the /lib directory of the jar.'
@@ -42,6 +52,24 @@ task uploadAll(type: Upload, dependsOn: jarAll) {
 	}
 }
 
+// -----------------------------------------------------------------------------
+// Custom configurations
+// -----------------------------------------------------------------------------
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': artifactId, 'Implementation-Version': version
+    }
+}
+
+install {
+	repositories.mavenInstaller {
+		pom.version = version
+		pom.groupId = groupId
+		pom.artifactId = artifactId
+	}
+}
+
 artifacts {
 	allArchives jarAll
 }
@@ -57,21 +85,34 @@ repositories {
 
 uploadArchives {
 	repositories {
-	   flatDir {
-		   dirs 'repos'
-	   }
-	   
-	   mavenDeployer {
-			repository(url: "file://localhost${System.env.HOME}/maven-repo/")
-			pom.groupId = 'gradle'
-			pom.artifactId = 'gradle-template'
+//		flatDir {
+//			dirs 'repos'
+//		}
+		
+//		mavenDeployer {
+//			repository(url: "file://localhost${System.env.HOME}/.m2/repository/")
+//			pom.groupId = groupId
+//			pom.artifactId = artifactId
+//			pom.version = version
+//		}
+		
+		mavenDeployer {
+			configuration = configurations.deployerJars
+			repository(url: "...") {
+				authentication(userName: "...", password: "...")
+			}
+			pom.groupId = groupId
+			pom.artifactId = artifactId
 			pom.version = version
 		}
 	}
 }
 
 dependencies {
+    // Dependencies not available from maven central
 //	compile files("${System.env.HOME}/java/lib/oracle/ojdbc6.jar")
+	
+	// Dependencies for runtime
 	
 	compile 'org.hibernate:hibernate-core:4.0.1.Final'
 	compile 'org.hibernate:hibernate-entitymanager:4.0.1.Final'
@@ -103,10 +144,16 @@ dependencies {
 	compile 'org.syslog4j:syslog4j:0.9.30'
 	compile 'org.zeromq:jzmq:2.2.2'
 	
+	// Dependencies for testing
+	
 	testCompile 'junit:junit:4.11'
+	
+	// Dependencies for uploading archives (task dependencies)
 	
 	deployerJars 'org.apache.maven.wagon:wagon-http:2.2'
 	deployerJars 'org.apache.maven.wagon:wagon-ssh:2.2'
+	
+	// Dependencies to include in the fat jar (separate configuration from :compile)
 	
 	// allJars project(':my-sub-project')
 	// allJars 'some:dependency:0.0.0'
